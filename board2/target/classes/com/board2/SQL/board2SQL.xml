@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="boarddate">
+	<select id="seeboard" resultType="com.board2.DTO.Board2DTO">
+		select * from BOARDTABLE
+	</select>
+	
+	<select id="countboard" resultType="java.lang.Integer">
+		select count(*) from BOARDTABLE
+	</select>
+	
+	<select id="selectBoard" resultType="com.board2.DTO.Board2DTO">
+	select * from (
+				select ROWNUM RN, A.* from 
+					(
+						SELECT * FROM BOARDTABLE 
+						ORDER BY boardno DESC 
+					)A
+		)
+		where RN between #{start} and #{end}
+	</select>
+	<select id="detailview" resultType="com.board2.DTO.Board2DTO">
+		select title,content,boarddate,hit,boardno from boardtable
+		where boardno=#{boardno}
+	</select>
+	<insert id="writeboard">
+		insert into boardtable (boardno,title,content) values(BOARD_SEQ.nextval,#{title},#{content})
+	</insert>
+	<update id="modiboard" parameterType="com.board2.DTO.Board2DTO">
+		update boardtable SET title = #{title},content=#{content}
+		where boardno = #{boardno}
+	</update>
+	<update id="hitplus">
+		update boardtable SET hit = #{hit}
+		where boardno = #{boardno}
+	</update>
+	<delete id="delboard" parameterType = "java.lang.Integer">
+	delete boardtable 
+	where boardno = #{boardno}
+	</delete>
+</mapper>

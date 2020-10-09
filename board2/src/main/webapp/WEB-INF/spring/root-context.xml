@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans https://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.1.xsd">
+
+	<!-- Root Context: defines shared resources visible to all other web components -->
+	<context:annotation-config />
+	<bean
+		class="org.springframework.jdbc.datasource.DriverManagerDataSource"
+		id="dataSource">
+		<property value="oracle.jdbc.driver.OracleDriver"
+			name="driverClassName" />
+		<!--<property name="url" value="jdbc:oracle:thin:@localhost:1521/xe"/>C:\oraclexe\app\oracle\product\11.2.0\server\network\ADMIN하위의또는 
+			C:\app\hong\product\11.2.0\dbhome_2\NETWORK\ADMINtnsnames.ora문서의 SERVICE_NAME값을 
+			확인하세요 -->
+		<property name="url"
+			value="jdbc:oracle:thin:@localhost:1521:orcl" />
+		<property value="board" name="username" />
+		<property value="1234" name="password" />
+	</bean>
+	<!-- myBatis 등록 부분 -->
+	<bean class="org.mybatis.spring.SqlSessionFactoryBean" id="sqlSessionFactory">
+		<!-- myBatis를 위한 환경 설정 파일을 어디에 무슨이름으로 만들어 놓을지를 지정하는 부분 -->
+		<property name="configLocation">
+			<value>classpath:/myBatis/myBatis-config.xml</value>
+		</property>
+		<!-- (중요부분) myBatis와 연결하는 데이터베이스(컨넥션 풀)을 지정하는 부분 -->
+		<property name="dataSource" ref="dataSource" />
+	</bean>
+	<!-- DAO에서스테이트먼트를 이용하여 쿼리실행 및 결과를 받기 위해 필요한 SqlSessionTemplate클래스의 객체생성하는 
+		부분실제생성자 public SqlSessionTemplate(SqlSessionFactory); -->
+	<bean class="org.mybatis.spring.SqlSessionTemplate" id="sqlSession">
+		<constructor-arg ref="sqlSessionFactory" index="0" />
+	</bean>
+	<!-- DI처리 -->
+	<bean class="com.board2.service.BoardService" id="bService" />
+	<bean class="com.board2.dao.BoardDAO" id="bDAO">
+		<property name="sqlSessionTemplate" ref="sqlSession" />
+	</bean>
+</beans>
